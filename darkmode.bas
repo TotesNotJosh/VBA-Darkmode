@@ -75,3 +75,36 @@ Private Sub ApplyDarkMode()
         Next ctrl
     End If
 End Sub
+
+'This is for automatically switching back to lightmode when you print. This goes into ThisWorkbook.
+Private Sub Workbook_BeforePrint(Cancel As Boolean)
+    Dim darkModeBackColor As Long
+    Dim lightModeBackColor As Long
+    Dim lightModeFontColor As Long
+    Dim ws As Worksheet
+    Dim originalSheet As Worksheet
+    Dim isDarkMode As Boolean
+    
+    darkModeBackColor = RGB(64, 64, 64)
+    lightModeBackColor = RGB(255, 255, 255)
+    lightModeFontColor = RGB(0, 0, 0)
+    
+    Set originalSheet = ActiveSheet
+    Application.ScreenUpdating = False
+    
+    ' Check if the first sheet is in dark mode
+    isDarkMode = (ThisWorkbook.Sheets(1).Cells(1, 1).Interior.Color = darkModeBackColor)
+    
+    If isDarkMode Then
+        For Each ws In ThisWorkbook.Sheets
+            ws.Activate
+            ' Switch to light mode
+            ws.Cells.Interior.ColorIndex = 0
+            ws.Cells.Font.Color = lightModeFontColor
+            ChangeButtons ws, lightModeBackColor, lightModeFontColor, "Dark Mode"
+        Next ws
+    End If
+    
+    originalSheet.Activate
+    Application.ScreenUpdating = True
+End Sub
