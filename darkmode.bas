@@ -1,3 +1,4 @@
+'This is the general macro.
 Sub ToggleDarkLightMode()
     Dim ws As Worksheet
     Dim darkModeBackColor As Long
@@ -39,4 +40,38 @@ Sub ChangeButtons(ws As Worksheet, bgColor As Long, fontColor As Long, newText A
             End If
         End If
     Next shp
+End Sub
+
+'This is to be put in the code portion of a UserForm to make the UserForms match the darkmode of the sheet.
+Private Sub UserForm_Initialize()
+    ApplyDarkMode
+End Sub
+Private Sub UserForm_Activate()
+    ApplyDarkMode
+End Sub
+Private Sub ApplyDarkMode()
+    Dim ctrl As Control
+    If ThisWorkbook.Sheets(1).Range("A1").Interior.Color = RGB(64, 64, 64) Then
+        Me.BackColor = RGB(64, 64, 64)
+        For Each ctrl In Me.Controls
+            ctrl.ForeColor = RGB(255, 255, 255)
+            ctrl.BackColor = RGB(64, 64, 64)
+            If TypeOf ctrl Is TextBox Or TypeOf ctrl Is ComboBox Or TypeOf ctrl Is ListBox Then
+                ctrl.BackColor = RGB(50, 50, 50)
+            ElseIf TypeOf Control Is Label Or TypeOf ctrl Is CommandButton Or TypeOf ctrl Is Frame Then
+                ctrl.BackColor = RGB(64, 64, 64)
+            End If
+        Next ctrl
+    Else
+        Me.BackColor = RGB(245, 245, 245)
+        For Each ctrl In Me.Controls
+            ctrl.ForeColor = RGB(0, 0, 0)
+            ctrl.BackColor = RGB(245, 245, 245)
+            If TypeOf ctrl Is TextBox Or TypeOf ctrl Is ComboBox Then
+                ctrl.BackColor = RGB(245, 245, 245)
+            ElseIf TypeOf ctrl Is Label Or TypeOf ctrl Is CommandButton Then
+                ctrl.BackColor = RGB(245, 245, 245)
+            End If
+        Next ctrl
+    End If
 End Sub
