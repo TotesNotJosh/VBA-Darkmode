@@ -1,3 +1,4 @@
+'Module Section
 'This is the general macro.
 Sub ToggleDarkLightMode()
     Dim ws As Worksheet
@@ -7,6 +8,8 @@ Sub ToggleDarkLightMode()
     Dim lightModeFontColor As Long
     Dim originalSheet As Worksheet
     Dim isDarkMode As Boolean
+    Dim table As ListObject
+    Dim cell As Range
     Set originalSheet = ActiveSheet
     darkModeBackColor = RGB(64, 64, 64)
     darkModeFontColor = RGB(243, 243, 243)
@@ -25,23 +28,22 @@ Sub ToggleDarkLightMode()
             ws.Cells.Font.Color = darkModeFontColor
             ChangeButtons ws, darkModeBackColor, darkModeFontColor, "Light Mode"
         End If
+        For Each table In ws.ListObjects
+            If isDarkMode Then
+                table.TableStyle = "TableStyleMedium2"
+            Else
+                table.TableStyle = "TableStyleDark1"
+            End If
+            For Each cell In table.Range
+                cell.Interior.ColorIndex = 0
+            Next cell
+        Next table
     Next ws
     originalSheet.Activate
     Application.ScreenUpdating = True
 End Sub
-Sub ChangeButtons(ws As Worksheet, bgColor As Long, fontColor As Long, newText As String)
-    Dim shp As Shape
-    For Each shp In ws.Shapes
-        If shp.TextFrame2.HasText Then
-            shp.Fill.ForeColor.RGB = bgColor
-            shp.TextFrame.Characters.Font.Color = fontColor
-            If shp.Name = "ToggleButton" Then
-                shp.OLEFormat.Object.Caption = newText
-            End If
-        End If
-    Next shp
-End Sub
 
+'UserForm Section
 'This is to be put in the code portion of a UserForm to make the UserForms match the darkmode of the sheet.
 Private Sub UserForm_Initialize()
     ApplyDarkMode
@@ -76,6 +78,7 @@ Private Sub ApplyDarkMode()
     End If
 End Sub
 
+'ThisWorkbook Section
 'This is for automatically switching back to lightmode when you print. This goes into ThisWorkbook.
 Private Sub Workbook_BeforePrint(Cancel As Boolean)
     Dim darkModeBackColor As Long
